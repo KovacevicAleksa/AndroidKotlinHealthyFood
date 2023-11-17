@@ -23,6 +23,10 @@ class MainActivity : AppCompatActivity() {
 
         foodList.add(Food(R.drawable.jabuka, "Jabuka"))
         foodList.add(Food(R.drawable.banana, "Banana"))
+        foodList.add(Food(R.drawable.limun,"Limun"))
+        foodList.add(Food(R.drawable.lubenica,"Lubenica"))
+        foodList.add(Food(R.drawable.jagoda,"Jagoda"))
+        foodList.add(Food(R.drawable.ananas,"Ananas"))
 
         foodAdapter = FoodAdapter(foodList)
         recycleView.adapter = foodAdapter
