@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1047892710308",
+    "project_id": "realtimebase-f6656",
+    "storage_bucket": "realtimebase-f6656.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047892710308:android:06cb81c11d87bb3700a731",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvswZVj20Jwk3g_pKG4oIpIwqTPBgOTN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

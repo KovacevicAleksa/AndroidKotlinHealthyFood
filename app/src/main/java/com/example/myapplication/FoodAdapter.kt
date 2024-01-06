@@ -16,7 +16,7 @@ class FoodAdapter (private val foodList:ArrayList<Food>)
     class FoodViewHolder (itemView : View) : RecyclerView.ViewHolder(itemView) {
         val imageView : ImageView = itemView.findViewById(R.id.imageView)
         val textView : TextView = itemView.findViewById(R.id.textView)
-
+        val apidataTextView: TextView = itemView.findViewById(R.id.data)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoodViewHolder {
@@ -32,6 +32,8 @@ class FoodAdapter (private val foodList:ArrayList<Food>)
         val food = foodList[position]
         holder.imageView.setImageResource(food.image)
         holder.textView.text = food.name
+        holder.apidataTextView.text = food.apidata
+
 
         holder.itemView.setOnClickListener{ onItemClick?.invoke(food) }
     }

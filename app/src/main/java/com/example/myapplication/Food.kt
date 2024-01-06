@@ -3,9 +3,10 @@ package com.example.myapplication
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Food(val image:Int , val name:String) : Parcelable {
+data class Food(val image: Int, val name: String, var apidata: String = "") : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
+        parcel.readString()!!,
         parcel.readString()!!
     ) {
     }
@@ -13,6 +14,7 @@ data class Food(val image:Int , val name:String) : Parcelable {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(image)
         parcel.writeString(name)
+        parcel.writeString(apidata)
     }
 
     override fun describeContents(): Int {
