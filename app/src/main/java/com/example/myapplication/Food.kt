@@ -2,6 +2,8 @@ package com.example.myapplication
 
 import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 data class Food(val image:Int , val name:String) : Parcelable {
     constructor(parcel: Parcel) : this(
