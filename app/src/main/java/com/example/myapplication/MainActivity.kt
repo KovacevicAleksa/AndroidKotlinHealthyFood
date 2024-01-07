@@ -6,94 +6,86 @@ import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import okhttp3.Call
-import okhttp3.Callback
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var foodList: ArrayList<Food>
+    private lateinit var foodAdapter: FoodAdapter
 
-
-
-    var responseData: String? = null
-    private lateinit var recycleView: RecyclerView
-    private lateinit var foodList : ArrayList<Food>
-    private lateinit var foodAdapter : FoodAdapter
-
-
+    companion object {
+        private const val BASE_URL = "https://api.api-ninjas.com/v1/nutrition?query="
+        private const val API_KEY = "ePjBXaX16JtfTmvEuNmgMA==ZOuYxeSINJjBeLXA"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
-        recycleView = findViewById(R.id.recyclerView)
-        recycleView.setHasFixedSize(true)
-        recycleView.layoutManager = LinearLayoutManager(this)
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         foodList = ArrayList()
 
-        foodList.add(Food(R.drawable.jabuka, "Jabuka",responseData ?: "NotFound"))
-        foodList.add(Food(R.drawable.banana, "Banana",responseData ?: "NotFound"))
-        foodList.add(Food(R.drawable.limun,"Limun",responseData ?: "NotFound"))
-        foodList.add(Food(R.drawable.lubenica,"Lubenica",responseData ?: "NotFound"))
-        foodList.add(Food(R.drawable.jagoda,"Jagoda",responseData ?: "NotFound"))
-        foodList.add(Food(R.drawable.ananas,"Ananas",responseData ?: "NotFound"))
+        foodList.add(Food(R.drawable.jabuka, "Jabuka"))
+        foodList.add(Food(R.drawable.banana, "Banana"))
+        foodList.add(Food(R.drawable.limun, "Limun"))
+        foodList.add(Food(R.drawable.lubenica, "Lubenica"))
+        foodList.add(Food(R.drawable.jagoda, "Jagoda"))
+        foodList.add(Food(R.drawable.ananas, "Ananas"))
 
         foodAdapter = FoodAdapter(foodList)
-        recycleView.adapter = foodAdapter
-
-
+        recyclerView.adapter = foodAdapter
 
         foodAdapter.onItemClick = {
-            val intent = Intent(this ,DetailedActivity::class.java)
+            val intent = Intent(this, DetailedActivity::class.java)
             intent.putExtra("food", it)
-            intent.putExtra("apidata", it.apidata)  // Dodajte podatke iz API-ja
+            intent.putExtra("apidata", it.apidata)
             startActivity(intent)
         }
 
-        // Make the network request asynchronously
-        fetchData()
-
+        // Use a coroutine to fetch data for each food item
+        CoroutineScope(Dispatchers.Main).launch {
+            fetchData("apple", 0)
+            fetchData("banana", 1)
+            fetchData("lemon", 2)
+            fetchData("watermelon", 3)
+            fetchData("strawberry", 4)
+            fetchData("pineapple", 5)
+        }
     }
 
-    private fun fetchData() {
+    private suspend fun fetchData(query: String, index: Int) {
         val client = OkHttpClient()
-        // Novi API link i ključ
-        val url = "https://api.api-ninjas.com/v1/nutrition?query=1lb brisket and fries"
-        val apiKey = "ePjBXaX16JtfTmvEuNmgMA==ZOuYxeSINJjBeLXA"
-
+        val url = "$BASE_URL$query"
         val request = Request.Builder()
             .url(url)
-            .addHeader("x-api-key", apiKey)  // Dodajte ključ kao zaglavlje zahteva
+            .addHeader("x-api-key", API_KEY)
             .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-                Log.e("MainActivity", "Poziv nije uspio", e)
-            }
+        withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
 
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    runOnUiThread {
-                        responseData = response.body?.string()
-                        Log.d("MainActivity", "Odgovor je uspešan: $responseData")
+                response.use {
+                    val responseData = it.body?.string()
+                    Log.d("MainActivity", "Response successful: $responseData")
 
-                        for (food in foodList) {
-                            food.apidata = responseData ?: ""
-                        }
-
-                        // Obavesti adapter da su podaci promenjeni
-                        foodAdapter.notifyDataSetChanged()
-
+                    // Set the response data for the correct food item
+                    foodList[index].apidata = responseData ?: "NotFound"
+                    withContext(Dispatchers.Main) {
+                        foodAdapter.notifyItemChanged(index)
                     }
                 }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Log.e("MainActivity", "API call failed", e)
             }
-        })
+        }
     }
 }
