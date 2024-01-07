@@ -22,6 +22,7 @@
             android:layout_marginBottom="10dp"
             android:scaleType="fitXY"
             android:src="@drawable/jabuka"
+            android:contentDescription="Voće"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -45,8 +46,9 @@
             android:layout_height="wrap_content"
             android:text="Jabuka"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="1sp"
             android:textStyle="bold"
+            android:alpha="0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

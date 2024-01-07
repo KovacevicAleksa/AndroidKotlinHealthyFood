@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONArray
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -74,10 +75,21 @@ class MainActivity : AppCompatActivity() {
 
                 response.use {
                     val responseData = it.body?.string()
-                    Log.d("MainActivity", "Response successful: $responseData")
+                    val parsedData = JSONArray(responseData).getJSONObject(0)
+                    val desiredData = hashMapOf(
+                        "Kalorije" to parsedData.getDouble("calories"), // Koristi srpske nazive
+                        "Proteini" to parsedData.getDouble("protein_g"),
+                        "Masti" to parsedData.getDouble("fat_total_g"),
+                        "Secera" to parsedData.getDouble("sugar_g"),
+                        "Vlakna" to parsedData.getDouble("fiber_g")
+                    )
 
-                    // Set the response data for the correct food item
-                    foodList[index].apidata = responseData ?: "NotFound"
+                    var formattedData = ""
+                    desiredData.forEach { (key, value) ->
+                        formattedData += "${key.capitalize()}: $value\n" // Dodaj novu liniju za svaki podatak
+                    }
+
+                    foodList[index].apidata = formattedData.trim() // Ukloni poslednju novu liniju
                     withContext(Dispatchers.Main) {
                         foodAdapter.notifyItemChanged(index)
                     }
@@ -88,4 +100,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }
